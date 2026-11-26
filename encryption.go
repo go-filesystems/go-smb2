@@ -2,6 +2,7 @@ package smb2
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/go-filesystems/go-smb2/internal/smb2"
 )
@@ -25,6 +26,20 @@ func (c *Session) Encrypted() bool {
 // session is encrypted, or the server marked the share SMB2_SHAREFLAG_ENCRYPT_DATA.
 func (fs *Share) Encrypted() bool {
 	return fs.treeConn.session.encrypted() || fs.treeConn.shareFlags&smb2.SMB2_SHAREFLAG_ENCRYPT_DATA != 0
+}
+
+// checkEncryptionKeys refuses a session that cannot be encrypted when the
+// dialer required it: no keys were derived (a guest or anonymous session has
+// no session key) or the final flags say guest or anonymous.
+func (s *session) checkEncryptionKeys() error {
+	if !s.requireEncryption {
+		return nil
+	}
+	if s.encrypter == nil || s.decrypter == nil ||
+		s.sessionFlags&(smb2.SMB2_SESSION_FLAG_IS_GUEST|smb2.SMB2_SESSION_FLAG_IS_NULL) != 0 {
+		return fmt.Errorf("%w: a guest or anonymous session has no encryption key", ErrEncryptionRequired)
+	}
+	return nil
 }
 
 func (s *session) encrypted() bool {

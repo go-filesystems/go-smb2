@@ -262,3 +262,36 @@ func FuzzRequireEncryptionNegotiate(f *testing.F) {
 		}
 	})
 }
+
+// checkEncryptionKeys: each way a required-encryption session can lack keys is
+// refused, one at a time, and the same session is fine when nothing is required.
+func TestCheckEncryptionKeys(t *testing.T) {
+	key := make([]byte, 16)
+	rand.Read(key)
+	mk := func(require bool, enc, dec bool, flags uint16) *session {
+		s := &session{conn: &conn{requireEncryption: require}, sessionFlags: flags}
+		if enc {
+			s.encrypter = newGCM(key)
+		}
+		if dec {
+			s.decrypter = newGCM(key)
+		}
+		return s
+	}
+	for name, tc := range map[string]struct {
+		s       *session
+		refused bool
+	}{
+		"keys, user session":      {mk(true, true, true, 0), false},
+		"no encrypter":            {mk(true, false, true, 0), true},
+		"no decrypter":            {mk(true, true, false, 0), true},
+		"guest with keys":         {mk(true, true, true, smb2.SMB2_SESSION_FLAG_IS_GUEST), true},
+		"anonymous with keys":     {mk(true, true, true, smb2.SMB2_SESSION_FLAG_IS_NULL), true},
+		"nothing required, guest": {mk(false, false, false, smb2.SMB2_SESSION_FLAG_IS_GUEST), false},
+	} {
+		err := tc.s.checkEncryptionKeys()
+		if tc.refused != errors.Is(err, ErrEncryptionRequired) || (!tc.refused && err != nil) {
+			t.Errorf("%s: refused=%v, got %v", name, tc.refused, err)
+		}
+	}
+}

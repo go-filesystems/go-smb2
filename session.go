@@ -253,9 +253,8 @@ func sessionSetup(ctx context.Context, conn *conn, i Initiator) (*session, error
 
 	s.sessionFlags = r.SessionFlags()
 
-	if conn.requireEncryption && (s.encrypter == nil || s.decrypter == nil ||
-		s.sessionFlags&(smb2.SMB2_SESSION_FLAG_IS_GUEST|smb2.SMB2_SESSION_FLAG_IS_NULL) != 0) {
-		return nil, fmt.Errorf("%w: a guest or anonymous session has no encryption key", ErrEncryptionRequired)
+	if err := s.checkEncryptionKeys(); err != nil {
+		return nil, err
 	}
 
 	// now, allow access from receiver
