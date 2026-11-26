@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"fmt"
+	"net"
 	"os"
 	"sync"
 	"sync/atomic"
@@ -990,6 +991,14 @@ exit:
 	conn.outstandingRequests.shutdown(err)
 
 	conn.err = err
+
+	if err == nil {
+		// An expected shutdown (logoff) leaves err nil, which would let a later
+		// request pass the closed-connection check in sendWith, queue its packet
+		// for a sender that has already exited, and wait for a write result
+		// that never comes.
+		conn.err = &TransportError{net.ErrClosed}
+	}
 
 	close(conn.wdone)
 }
