@@ -112,6 +112,34 @@ func TestLogoffClosesTransportOnFailure(t *testing.T) {
 	}, time.Second, time.Millisecond, "receiver goroutine did not shut down")
 }
 
+// Once the receiver has shut the connection down after a logoff, a further
+// request is refused at once. It used to pass the closed-connection check
+// (the expected shutdown left conn.err nil), queue its packet for a sender
+// that had exited and wait for ever.
+func TestSendAfterCleanShutdownIsRefused(t *testing.T) {
+	require := require.New(t)
+
+	dt := newDeadTransport()
+	c := newTestConn(dt)
+	s := &session{conn: c}
+
+	_ = s.logoff(context.Background())
+	select {
+	case <-c.wdone:
+	case <-time.After(5 * time.Second):
+		t.Fatal("receiver did not shut down")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := s.logoff(ctx)
+	require.Error(err)
+	var te *TransportError
+	require.ErrorAs(err, &te)
+	require.Equal(net.ErrClosed, te.Err)
+	require.NoError(ctx.Err(), "the refusal must not wait for the context")
+}
+
 // A second logoff on an already-torn-down connection must not block: the
 // receiver is gone, so nothing will drain a second rdone signal.
 func TestLogoffTwiceDoesNotBlock(t *testing.T) {
