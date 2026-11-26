@@ -9,10 +9,21 @@ Description
 
 An SMB2/3 client implementation. This is a fork of the project [github.com/hirochachacha/go-smb2](https://github.com/hirochachacha/go-smb2). Any releases will be pre-1.0.0 for some time as features and bug fixes are implemented.
 
+This copy (`github.com/go-filesystems/go-smb2`) is a fork of
+[cloudsoda/go-smb2](https://github.com/cloudsoda/go-smb2) with one addition:
+`Negotiator.RequireEncryption`. With it the session is encrypted-only: every
+request after session setup is sent encrypted (the server need not ask for it),
+an unencrypted response is refused, and `Dial` fails with
+`ErrEncryptionRequired` when the server cannot encrypt (dialect below 3.0, no
+encryption capability, no cipher in 3.1.1, guest or anonymous session).
+`Session.Encrypted()` and `Share.Encrypted()` report the state in use. The
+module path is renamed so that `go install` works for programs that depend on
+it (a `replace` directive would break it).
+
 Installation
 ------------
 
-`go get github.com/cloudsoda/go-smb2`
+`go get github.com/go-filesystems/go-smb2`
 
 Documentation
 -------------
@@ -31,7 +42,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/cloudsoda/go-smb2"
+	"github.com/go-filesystems/go-smb2"
 )
 
 func main() {
@@ -88,7 +99,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/cloudsoda/go-smb2"
+	"github.com/go-filesystems/go-smb2"
 )
 
 func main() {
@@ -148,7 +159,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/cloudsoda/go-smb2"
+	"github.com/go-filesystems/go-smb2"
 )
 
 func main() {
@@ -199,7 +210,7 @@ import (
 	"net"
 	iofs "io/fs"
 
-	"github.com/cloudsoda/go-smb2"
+	"github.com/go-filesystems/go-smb2"
 )
 
 func main() {
@@ -253,7 +264,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cloudsoda/go-smb2"
+	"github.com/go-filesystems/go-smb2"
 	"github.com/jcmturner/gokrb5/v8/client"
 	"github.com/jcmturner/gokrb5/v8/config"
 )

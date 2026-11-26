@@ -26,8 +26,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cloudsoda/go-smb2/internal/erref"
-	"github.com/cloudsoda/go-smb2/internal/smb2"
+	"github.com/go-filesystems/go-smb2/internal/erref"
+	"github.com/go-filesystems/go-smb2/internal/smb2"
 )
 
 // startBalance is the spendable credit count after opening a fresh test account

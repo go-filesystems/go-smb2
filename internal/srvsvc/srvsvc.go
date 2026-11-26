@@ -16,7 +16,7 @@ package srvsvc
 import (
 	"encoding/binary"
 
-	"github.com/cloudsoda/go-smb2/internal/utf16le"
+	"github.com/go-filesystems/go-smb2/internal/utf16le"
 )
 
 var le = binary.LittleEndian

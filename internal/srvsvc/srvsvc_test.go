@@ -9,7 +9,7 @@ import (
 	"testing"
 	"unicode/utf16"
 
-	"github.com/cloudsoda/go-smb2/internal/msrpc"
+	"github.com/go-filesystems/go-smb2/internal/msrpc"
 	"github.com/stretchr/testify/require"
 )
 

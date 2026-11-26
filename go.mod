@@ -1,4 +1,4 @@
-module github.com/cloudsoda/go-smb2
+module github.com/go-filesystems/go-smb2
 
 go 1.25
 
