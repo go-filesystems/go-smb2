@@ -293,5 +293,12 @@ func TestCheckEncryptionKeys(t *testing.T) {
 		if tc.refused != errors.Is(err, ErrEncryptionRequired) || (!tc.refused && err != nil) {
 			t.Errorf("%s: refused=%v, got %v", name, tc.refused, err)
 		}
+		got, aerr := tc.s.admit()
+		if tc.refused && (got != nil || !errors.Is(aerr, ErrEncryptionRequired) || tc.s.useSession.Load()) {
+			t.Errorf("%s: admit let a refused session through", name)
+		}
+		if !tc.refused && (got != tc.s || aerr != nil || !tc.s.useSession.Load()) {
+			t.Errorf("%s: admit refused a good session: %v", name, aerr)
+		}
 	}
 }

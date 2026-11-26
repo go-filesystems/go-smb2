@@ -42,6 +42,19 @@ func (s *session) checkEncryptionKeys() error {
 	return nil
 }
 
+// admit ends session setup: a session that fails the encryption requirement is
+// refused, otherwise the receiver is allowed to use it.
+func (s *session) admit() (*session, error) {
+	if err := s.checkEncryptionKeys(); err != nil {
+		return nil, err
+	}
+
+	// now, allow access from receiver
+	s.useSession.Store(true)
+
+	return s, nil
+}
+
 func (s *session) encrypted() bool {
 	return s.encrypter != nil && (s.requireEncryption || s.sessionFlags&smb2.SMB2_SESSION_FLAG_ENCRYPT_DATA != 0)
 }
