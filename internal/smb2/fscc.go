@@ -3,7 +3,7 @@
 package smb2
 
 import (
-	"github.com/cloudsoda/go-smb2/internal/utf16le"
+	"github.com/go-filesystems/go-smb2/internal/utf16le"
 )
 
 // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fscc/c8e77b37-3909-4fe6-a4ea-2b9d423b1ee4

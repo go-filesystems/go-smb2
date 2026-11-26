@@ -3,7 +3,7 @@ package smb2
 import (
 	"testing"
 
-	"github.com/cloudsoda/go-smb2/internal/utf16le"
+	"github.com/go-filesystems/go-smb2/internal/utf16le"
 	"github.com/stretchr/testify/require"
 )
 

@@ -12,10 +12,10 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/cloudsoda/go-smb2/internal/crypto/ccm"
-	"github.com/cloudsoda/go-smb2/internal/crypto/cmac"
-	"github.com/cloudsoda/go-smb2/internal/erref"
-	"github.com/cloudsoda/go-smb2/internal/smb2"
+	"github.com/go-filesystems/go-smb2/internal/crypto/ccm"
+	"github.com/go-filesystems/go-smb2/internal/crypto/cmac"
+	"github.com/go-filesystems/go-smb2/internal/erref"
+	"github.com/go-filesystems/go-smb2/internal/smb2"
 )
 
 func sessionSetup(ctx context.Context, conn *conn, i Initiator) (*session, error) {
@@ -253,10 +253,7 @@ func sessionSetup(ctx context.Context, conn *conn, i Initiator) (*session, error
 
 	s.sessionFlags = r.SessionFlags()
 
-	// now, allow access from receiver
-	s.useSession.Store(true)
-
-	return s, nil
+	return s.admit()
 }
 
 type session struct {

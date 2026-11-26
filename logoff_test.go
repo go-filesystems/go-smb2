@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cloudsoda/go-smb2/internal/smb2"
+	"github.com/go-filesystems/go-smb2/internal/smb2"
 	"github.com/stretchr/testify/require"
 )
 

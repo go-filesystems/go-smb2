@@ -24,8 +24,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cloudsoda/go-smb2/internal/erref"
-	"github.com/cloudsoda/go-smb2/internal/smb2"
+	"github.com/go-filesystems/go-smb2/internal/erref"
+	"github.com/go-filesystems/go-smb2/internal/smb2"
 )
 
 // Reads at this offset are answered with STATUS_OBJECT_NAME_NOT_FOUND.

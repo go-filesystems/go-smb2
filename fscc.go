@@ -1,7 +1,7 @@
 package smb2
 
 import (
-	"github.com/cloudsoda/go-smb2/internal/smb2"
+	"github.com/go-filesystems/go-smb2/internal/smb2"
 )
 
 // A ReparseTag uniquely identifies the owner of a reparse point. The owner is

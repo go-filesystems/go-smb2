@@ -6,10 +6,10 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/cloudsoda/go-smb2/internal/erref"
-	"github.com/cloudsoda/go-smb2/internal/msrpc"
-	"github.com/cloudsoda/go-smb2/internal/smb2"
-	"github.com/cloudsoda/go-smb2/internal/srvsvc"
+	"github.com/go-filesystems/go-smb2/internal/erref"
+	"github.com/go-filesystems/go-smb2/internal/msrpc"
+	"github.com/go-filesystems/go-smb2/internal/smb2"
+	"github.com/go-filesystems/go-smb2/internal/srvsvc"
 )
 
 // ShareType is the kind of resource a share exposes. The values are the base
