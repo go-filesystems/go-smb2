@@ -1,3 +1,6 @@
+# Interop with a real Samba (Linux) and a real Windows share. Inherited from
+# upstream; actions are pinned by commit SHA, and the module cache is the one
+# actions/setup-go keeps (it replaces a separate actions/cache step).
 on: [pull_request, workflow_dispatch]
 jobs:
   test_linux:
@@ -6,10 +9,10 @@ jobs:
         go: [1.27.3]
     runs-on: ubuntu-26.04
     steps:
-    - uses: actions/setup-go@v7
+    - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
       with:
         go-version: ${{ matrix.go }}
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - run: |
         sudo apt update
         sudo apt install -y samba
@@ -18,15 +21,6 @@ jobs:
         (echo Smbpasswd12345; echo Smbpasswd12345) | sudo smbpasswd -a -s smbuser
         sudo cp ./.github/smb.conf /etc/samba/smb.conf
         sudo smbd
-    - uses: actions/cache@v6
-      with:
-        path: |
-          ~/go/pkg/mod
-          ~/.cache/go-build
-          ~/Library/Caches/go-build
-          ~\AppData\Local\go-build
-        key: ${{ runner.os }}-go-${{ matrix.go }}-${{ hashFiles('**/go.sum') }}
-        restore-keys: ${{ runner.os }}-go-${{ matrix.go }}-
     - run: |
         cp ./.github/client_conf.json ./
         go test -v -race ./...
@@ -39,28 +33,18 @@ jobs:
         go: [1.27.3]
     runs-on: windows-2022
     steps:
-    - uses: actions/setup-go@v7
+    - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
       with:
         go-version: ${{ matrix.go }}
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - run: |
         mkdir C:\tmp
         net user smbuser Smbpasswd12345 /add
         net share tmp="C:\tmp" /GRANT:smbuser,full
         net share tmp2="C:\tmp" /GRANT:smbuser,read
-    - uses: actions/cache@v6
-      with:
-        path: |
-          ~/go/pkg/mod
-          ~/.cache/go-build
-          ~/Library/Caches/go-build
-          ~\AppData\Local\go-build
-        key: ${{ runner.os }}-go-${{ matrix.go }}-${{ hashFiles('**/go.sum') }}
-        restore-keys: ${{ runner.os }}-go-${{ matrix.go }}-
     - run: |
         cp ./.github/client_conf.json ./
         go test -v -race ./...
     - run: |
         go install honnef.co/go/tools/cmd/staticcheck@latest
         staticcheck ./...
-  
