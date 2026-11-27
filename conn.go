@@ -462,7 +462,8 @@ func (conn *conn) sendWith(ctx context.Context, req smb2.Packet, tc *treeConn, b
 		// do nothing
 	}
 
-	if err := conn.settleAbandonedWrites(ctx); err != nil {
+	err = conn.settleAbandonedWrites(ctx)
+	if err != nil {
 		conn.refundCredits(borrowed)
 		return nil, err
 	}
@@ -548,9 +549,10 @@ func (conn *conn) sendCompound(ctx context.Context, entries []compoundEntry) ([]
 	default:
 	}
 
-	if err := conn.settleAbandonedWrites(ctx); err != nil {
+	settleErr := conn.settleAbandonedWrites(ctx)
+	if settleErr != nil {
 		conn.refundCredits(totalBorrowed)
-		return nil, err
+		return nil, settleErr
 	}
 
 	n := len(entries)
